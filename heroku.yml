@@ -1,10 +1,11 @@
 build:
   docker:
-    app: Dockerfile
+    web: Dockerfile
     frontend: frontend/Dockerfile
 run:
-  app: /usr/sbin/nginx -g "daemon off;"
+  web: /usr/sbin/nginx -g "daemon off;"
   frontend: npm run start
 release:
+  image: web
   command:
-    - php artisan migrate --force
+    - php /var/www/artisan migrate --force
