@@ -8,4 +8,4 @@ run:
 release:
   image: web
   command:
-    - php /var/www/artisan migrate --force
+    - cd /var/www && composer install --no-dev --optimize-autoloader && php artisan migrate --force
