@@ -1,9 +1,9 @@
 build:
   docker:
-    backend: Dockerfile
+    app: Dockerfile
     frontend: frontend/Dockerfile
 run:
-  backend: /usr/sbin/nginx -g "daemon off;"
+  app: /usr/sbin/nginx -g "daemon off;"
   frontend: npm run start
 release:
   command:
