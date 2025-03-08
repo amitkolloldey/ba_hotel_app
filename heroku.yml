@@ -1,11 +1,9 @@
 build:
   docker:
     web: Dockerfile
-    frontend: frontend/Dockerfile
-run:
-  web: /usr/sbin/nginx -g "daemon off;"
-  frontend: npm run start
 release:
   image: web
   command:
-    - cd /var/www && composer install --no-dev --optimize-autoloader && php artisan migrate --force
+    - cd /var/www && php artisan migrate --force
+run:
+  web: /start.sh

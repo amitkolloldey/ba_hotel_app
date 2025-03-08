@@ -1,8 +1,8 @@
 FROM php:8.2-fpm
 
-# Install dependencies
+# Install dependencies and Nginx
 RUN apt-get update && apt-get install -y \
-    zip unzip curl git libpng-dev libonig-dev libxml2-dev \
+    zip unzip curl git libpng-dev libonig-dev libxml2-dev nginx \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
@@ -14,11 +14,26 @@ WORKDIR /var/www
 # Copy Laravel files
 COPY backend /var/www
 
+# Install dependencies
+RUN cd /var/www && composer install --no-dev --optimize-autoloader
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Expose port for PHP-FPM
-EXPOSE 9000
+# Copy Nginx configuration
+COPY nginx/default.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
-CMD ["php-fpm"]
+# Create start script to handle Heroku's dynamic port
+RUN echo '#!/bin/bash\n\
+sed -i "s/listen \$PORT/listen $PORT/g" /etc/nginx/sites-available/default\n\
+php-fpm -D\n\
+nginx -g "daemon off;"\n\
+' > /start.sh && chmod +x /start.sh
+
+# Expose port
+EXPOSE 80
+
+# Start script as CMD
+CMD ["/start.sh"]
