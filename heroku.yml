@@ -1,6 +1,10 @@
 build:
   docker:
-    web: Dockerfile  # This is the backend Dockerfile
-    frontend: ./frontend/Dockerfile  # Path to frontend Dockerfile
-  services:
-    - web
+    backend: Dockerfile
+    frontend: frontend/Dockerfile
+run:
+  backend: /usr/sbin/nginx -g "daemon off;"
+  frontend: npm run start
+release:
+  command:
+    - php artisan migrate --force
